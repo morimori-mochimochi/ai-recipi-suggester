@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:15
+    platform: linux/amd64
+    environment:
+      TZ: Asia/Tokyo
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  
