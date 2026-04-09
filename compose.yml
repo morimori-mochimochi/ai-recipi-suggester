@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15
+    platform: linux/amd64
+    environment:
+      TZ: Asia/Tokyo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      # Dockerイメージをビルドする際の「基準となるディレクトリ」はcompose.ymlがある場所、と指定
+      # Dockerfile.dev 内で COPY Gemfile ./ のように記述した際、Dockerはこの「コンテキスト」内からファイルを探す
+      # 通常DockerはDockerfileという名前のファイルを自動的に探すが,このように開発環境用としてDockerfile.devという別名を使っている場合はこの記述が必要
+      context: .
+      dockerfile: Dockerfile.dev
+    # コンテナ内でPryなどのデバッガを対話的に使うために必要
+    tty: true
+    stdin_open: true
+    
+    volumes:
+      # PCのいる現在のフォルダをコンテナの/appに同期させる(コードの変更が即時同期される)
+      - .:/app
+      # GemをPC側にキャッシュし、ビルドを高速化する
+      - bundle_data:/usr/local/bundle:cached
+    ports:
+      # PCの3000番ポートをコンテナの3000番ポートに繋ぐ
+      - "3000:3000"
+    # DBサービスが起動してからappサービスを起動する
+    depends_on:
+      - db
+
+# volumesで定義した名前付きボリュームをDockerに作成させる
+volumes:
+  postgres_data:
+  bundle_data:
+
+    

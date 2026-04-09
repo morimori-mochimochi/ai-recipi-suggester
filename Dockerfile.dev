@@ -1,0 +1,39 @@
+# ベースとなるOSを指定
+FROM ruby:3.2.2
+
+# タイムゾーン、文字コード、開発モードなどの環境変数を設定
+ENV LANG C.UTF-8
+ENV TZ=Asia/Tokyo
+ENV RAILS_ENV=development
+
+# 必要なライブラリをインストール
+# postgresql-client: RailsからPostgreSQLに接続するために必要
+# vim, nano: コンテナ内でファイルを編集するためのエディタ
+# apt-get update -qq: インストール可能なパッケージの最新リストをリポジトリから取得するためのコマンド
+# -qq: エラー以外の出力を抑制するオプション。ログがスッキリして見やすくなる。
+# &&: 前のコマンドが成功した場合に次のコマンドを実行するための演算子。これにより、前のコマンドが失敗した場合は後続のコマンドが実行されないようになる。
+# apt-get install -y: 指定したパッケージをインストールするためのコマンド。-yオプションは、インストール中に出る確認プロンプトに自動で「yes」と答える。
+# これによりインストールプロセスが自動化され、ユーザーの介入なしで完了するようになる。
+# && rm -rf /var/lib/apt/lists/*: インストール後に不要なパッケージリストを削除するコマンド。これによりイメージのサイズを小さく保つことができる。
+
+RUN apt-get update -qq && apt-get install -y \
+  ca-certificates curl gnupg postgresql-client vim nano \
+  && rm -rf /var/lib/apt/lists/*
+
+# コンテナ内の作業ディレクトリを指定
+# cdでディレクトリに移動して作業するようなもの
+WORKDIR /app
+
+# Gemfileをコンテナ内にコピーしてbundle installを実行
+# この2行を先に実行することで、Gemfileに変更がない限りキャッシュが利用され、ビルドが高速化します
+# job- 4: bundle installを4つのgemを並行して実行するオプション。インストール時間が短縮される。
+# 最近のPCは4つ以上のCPUコアを持っていることが多いので4は安全に効果を実感しやすい数値
+COPY Gemfile Gemfile.lock ./
+RUN gem install bundler && bundle install --jobs 4
+
+# プロジェクトの全ファイルをコンテナ内にコピー
+COPY . .
+
+# コンテナ起動時に実行されるデフォルトのコマンド
+# bin/devはRails 7から導入された仕組みで、RailsサーバーとCSSのビルドなどを同時に実行します
+CMD ["bin/dev"]
