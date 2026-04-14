@@ -4,7 +4,7 @@ class GeminiClient
   def initialize
     api_key = ENV['GEMINI_API_KEY']
     @gen_ai = Google::GenerativeAI.new(api_key: api_key)
-    @model = @gen_ai.model("gemini-1.5-flash") # 最新の適切なモデルを指定
+    @model = @gen_ai.model("gemini-2.5-flash") # 最新の適切なモデルを指定
   end
 
   def suggest_recipe(ingredients)
@@ -13,6 +13,7 @@ class GeminiClient
     prompt = build_prompt(ingredients)
     
     begin
+     # generate_content：Geminiモデルに対してプロンプトを送信し、コンテンツを生成するために定義されているメソッド
       response = @model.generate_content(prompt)
       # responseの構造は利用するgemの仕様に合わせて調整してください
       response.dig("candidates", 0, "content", "parts", 0, "text")
