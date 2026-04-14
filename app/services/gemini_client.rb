@@ -1,10 +1,7 @@
 class GeminiClient
-  require 'google/generative_ai' # 使用するgemに合わせて変更してください
-
   def initialize
     api_key = ENV['GEMINI_API_KEY']
-    @gen_ai = Google::GenerativeAI.new(api_key: api_key)
-    @model = @gen_ai.model("gemini-2.5-flash") # 最新の適切なモデルを指定
+    @client = Gemini::Client.new(api_key: api_key)
   end
 
   def suggest_recipe(ingredients)
@@ -13,8 +10,14 @@ class GeminiClient
     prompt = build_prompt(ingredients)
     
     begin
-     # generate_content：Geminiモデルに対してプロンプトを送信し、コンテンツを生成するために定義されているメソッド
-      response = @model.generate_content(prompt)
+      # gemini-ai gem の仕様に合わせた呼び出し方
+      # モデル名は引数またはClient作成時に指定できます（デフォルトは gemini-1.5-flash など）
+      response = @client.generate_content({
+        contents: [{
+          role: 'user',
+          parts: [{ text: prompt }]
+        }]
+      })
       # responseの構造は利用するgemの仕様に合わせて調整してください
       response.dig("candidates", 0, "content", "parts", 0, "text")
     rescue => e
