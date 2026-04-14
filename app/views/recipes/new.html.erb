@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-8 max-w-2xl">
   <h1 class="text-3xl font-bold text-center mb-6">AIシェフの献立アプリ</h1>
   
-  <% form_with url: recipes_path, data: { turbo: false }, local: true do |form| %>
+  <%= form_with url: recipes_path, data: { turbo: false }, local: true do |form| %>
     <div class="mb-4">
       <%= form.label :ingredients, "冷蔵庫内の材料を入力してください", class: "block text-gray-700 text-sm font-bold mb-2" %>
       <%= form.text_area :ingredients, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", rows: 3, placeholder: "例: 豚肉、玉ねぎ、卵" %>

@@ -6,9 +6,14 @@ class RecipesController < ApplicationController
     ingredients = params[:ingredients]
 
     # サービスオブジェクトを呼び出す。プロンプト構築の詳細はサービス側が知っている
-    client = GeminiClient.new
-    @recipe = client.suggest_recipe(ingredients)
-    
-    render :new if @recipe.nil? # エラー時は入力画面に戻すなど
+    response_text = GeminiClient.new.suggest_recipe(ingredients)
+
+    if response_text
+      # AIから返ってきた文字列をJSONとして解析し、ハッシュに変換する
+      @recipe = JSON.parse(response_text)
+    else
+      flash[:alert] = "レシピの生成に失敗しました。"
+      render :new
+    end
   end
 end
