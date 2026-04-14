@@ -10,14 +10,13 @@ class GeminiClient
     prompt = build_prompt(ingredients)
     
     begin
-      # gemini-ai gem の仕様に合わせた呼び出し方
-      # モデル名は引数またはClient作成時に指定できます（デフォルトは gemini-1.5-flash など）
+      # モデルを明示的に指定します。gemini-2.5-flash は高速でレシピ生成のようなタスクに最適です。
       response = @client.generate_content({
         contents: [{
           role: 'user',
           parts: [{ text: prompt }]
         }]
-      })
+      }, model: "gemini-2.5-flash")
       # responseの構造は利用するgemの仕様に合わせて調整してください
       response.dig("candidates", 0, "content", "parts", 0, "text")
     rescue => e
@@ -33,7 +32,7 @@ class GeminiClient
     <<~PROMPT
       あなたはプロの料理研究家です。以下の材料を使って、家庭で簡単に作れる美味しいレシピを1つ提案してください。
       材料: #{ingredients}
-      料理名、材料の分量、手順を分かりやすく出力してください。
+      料理名、材料の分量、手順、総カロリーを分かりやすく出力してください。
     PROMPT
   end
 end
