@@ -32,7 +32,18 @@ class GeminiClient
     <<~PROMPT
       あなたはプロの料理研究家です。以下の材料を使って、家庭で簡単に作れる美味しいレシピを1つ提案してください。
       材料: #{ingredients}
-      料理名、材料の分量、手順、総カロリーを分かりやすく出力してください。
+      以下のJSON形式で、キーや値の型も完全に守って応答してください。
+      {
+        "recipeName ": "料理名",
+        "description": "料理の説明",
+        "ingredients": [
+          { "name": "材料名", "quantity": "分量" }
+        ],
+        "instructions": [
+           "手順1",
+           "手順2"
+        ]
+      }
     PROMPT
   end
 end
