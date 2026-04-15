@@ -10,7 +10,13 @@ class RecipesController < ApplicationController
 
     if response_text
       # AIから返ってきた文字列をJSONとして解析し、ハッシュに変換する
-      @recipe = JSON.parse(response_text)
+      begin
+        @recipe = JSON.parse(response_text)
+      rescue JSON::ParserError
+        flash.now[:alert] = "レシピデータの解析に失敗しました。もう一度お試しください。"
+        @recipe = nil
+        render :new
+      end
     else
       flash[:alert] = "レシピの生成に失敗しました。"
       render :new
