@@ -1,7 +1,7 @@
 class GeminiClient
   def initialize
     api_key = ENV['GEMINI_API_KEY']
-    @client = Gemini::Client.new(api_key: api_key)
+    @client = Google::GenerativeAI.new(api_key: api_key)
   end
 
   def suggest_recipe(ingredients)
@@ -10,15 +10,12 @@ class GeminiClient
     prompt = build_prompt(ingredients)
     
     begin
-      # モデルを明示的に指定します。gemini-2.5-flash は高速でレシピ生成のようなタスクに最適です。
-      response = @client.generate_content({
-        contents: [{
-          role: 'user',
-          parts: [{ text: prompt }]
-        }]
-      }, model: "gemini-2.5-flash")
-      # responseの構造は利用するgemの仕様に合わせて調整してください
-      response.dig("candidates", 0, "content", "parts", 0, "text")
+      # モデルを指定（gemini-1.5-flashが高速かつ安価で推奨されます）
+      model = @client.model("gemini-1.5-flash")
+      response = model.generate_content(prompt)
+      
+      # レスポンスからテキストを抽出
+      response.text
     rescue => e
       Rails.logger.error "Gemini API Error: #{e.message}"
       nil
@@ -34,7 +31,7 @@ class GeminiClient
       材料: #{ingredients}
       以下のJSON形式で、キーや値の型も完全に守って応答してください。
       {
-        "recipeName ": "料理名",
+        "recipeName": "料理名",
         "description": "料理の説明",
         "ingredients": [
           { "name": "材料名", "quantity": "分量" }
