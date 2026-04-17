@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   root "recipes#new"
 
   post "recipes", to: "recipes#create"
-
+  get "recipes", to: "recipes#new"
   # Defines the root path route ("/")
   # root "posts#index"
 end
