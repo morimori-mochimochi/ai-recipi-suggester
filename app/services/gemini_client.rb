@@ -41,6 +41,12 @@ class GeminiClient
     }.to_json
 
     response = http.request(request)
+
+    unless response.is_a?(Net::HTTPSuccess)
+      Rails.logger.error "Gemini API Error: #{response.code} - #{response.body}"
+      return nil
+    end
+
     json = JSON.parse(response.body)
 
     # AIの回答テキスト部分のみを抽出して返す

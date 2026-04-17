@@ -18,7 +18,7 @@ class RecipesController < ApplicationController
         render :new
       end
     else
-      flash[:alert] = "レシピの生成に失敗しました。"
+      flash.now[:alert] = "レシピの生成に失敗しました。APIキーや通信状況を確認してください。"
       render :new
     end
   end
