@@ -5,7 +5,7 @@ require "uri"
 class GeminiClient
   API_KEY = Rails.application.credentials.dig(:google_ai, :api_keys)
   # 現在の最新モデル（1.5-flash または 2.0-flash）を指定します
-  API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+  API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
   def suggest_recipe(ingredients)
     uri = URI("#{API_URL}?key=#{API_KEY}")
